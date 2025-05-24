@@ -6,11 +6,10 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Search, Star, Clock, Users, ChevronRight } from "lucide-react"
+import { ArrowRight, Search, Star, Clock, Users, ChevronRight, ChevronLeft } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { featuredExperiences, topDestinations } from "@/lib/data"
 import ExperienceCard from "@/components/experience-card"
-import DestinationCard from "@/components/destination-card"
 import { useTranslation } from "@/lib/i18n"
 import { DatePicker } from "@/components/simple-date-picker"
 
@@ -21,6 +20,9 @@ export default function HomePage() {
   const [dateQuery, setDateQuery] = useState("")
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const datePickerRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
 
   // Close date picker when clicking outside
   useEffect(() => {
@@ -35,6 +37,23 @@ export default function HomePage() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [datePickerRef])
+
+  // Check scroll position to show/hide scroll buttons
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      setCanScrollLeft(container.scrollLeft > 0)
+      setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth - 10)
+    }
+
+    // Initial check
+    handleScroll()
+
+    container.addEventListener("scroll", handleScroll)
+    return () => container.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,6 +74,23 @@ export default function HomePage() {
   const handleDateSelect = (dateRange: string) => {
     setDateQuery(dateRange)
     setIsDatePickerOpen(false)
+  }
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -600, behavior: "smooth" })
+    }
+  }
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 600, behavior: "smooth" })
+    }
+  }
+
+  // Function to navigate to experiences with destination filter
+  const navigateToDestinationExperiences = (destination: string) => {
+    router.push(`/experiences?destination=${destination}`)
   }
 
   return (
@@ -147,20 +183,57 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold mb-8">{t("where_to_next")}</h2>
 
           <div className="relative">
-            <div className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide">
+            <div
+              ref={scrollContainerRef}
+              className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+            >
               {topDestinations.map((destination) => (
-                <div key={destination.id} className="min-w-[240px] w-[240px] flex-shrink-0">
-                  <DestinationCard destination={destination} />
+                <div key={destination.id} className="min-w-[280px] w-[280px] flex-shrink-0 snap-start">
+                  <div
+                    className="rounded-lg overflow-hidden shadow-md h-[320px] relative group cursor-pointer"
+                    onClick={() => navigateToDestinationExperiences(destination.name)}
+                  >
+                    <img
+                      src={destination.image || "/placeholder.svg"}
+                      alt={destination.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 p-4 text-white">
+                      <h3 className="text-xl font-bold">{destination.name}</h3>
+                      <p className="text-sm text-white/80">{destination.country}</p>
+                      <div className="mt-2 text-xs bg-white/20 rounded-full px-3 py-1 inline-block backdrop-blur-sm">
+                        {destination.experienceCount} experiences
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <button
-              type="button"
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hidden md:flex items-center justify-center"
-            >
-              <ChevronRight className="h-6 w-6 text-gray-600" />
-            </button>
+            {/* Left scroll button */}
+            {canScrollLeft && (
+              <button
+                type="button"
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-md hidden md:flex items-center justify-center z-10 hover:bg-gray-100"
+                onClick={scrollLeft}
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="h-6 w-6 text-gray-600" />
+              </button>
+            )}
+
+            {/* Right scroll button */}
+            {canScrollRight && (
+              <button
+                type="button"
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-md hidden md:flex items-center justify-center z-10 hover:bg-gray-100"
+                onClick={scrollRight}
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="h-6 w-6 text-gray-600" />
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -208,20 +281,21 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 relative bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="absolute inset-0 bg-[url('/travel-collage-adventure.png')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-        <div className="container relative">
+      <section className="py-16 relative text-gray-800">
+        <div className="absolute inset-0 bg-[url('/travel-collage-adventure.png')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("ready_adventure")}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">{t("ready_adventure")}</h2>
             <p className="text-xl text-white/90 mb-8">{t("join_travelers")}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/experiences">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90">
+                <Button size="lg" className="bg-blue-600 text-white hover:bg-blue-700">
                   {t("explore_experiences")}
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90 border border-white font-medium">
                   {t("create_account")}
                 </Button>
               </Link>
