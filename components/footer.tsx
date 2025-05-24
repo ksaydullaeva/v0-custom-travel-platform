@@ -33,7 +33,7 @@ export default function Footer() {
             <div>
               <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
                 <Globe className="h-6 w-6 text-blue-400" />
-                <span>TravelMind</span>
+                <span>TravelExplorer</span>
               </Link>
               <p className="text-slate-300 mb-4">{t("discover_amazing")}</p>
               <div className="flex gap-4">
@@ -56,22 +56,22 @@ export default function Footer() {
               <h4 className="font-bold text-lg mb-4">{t("explore_footer")}</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/experiences" className="text-slate-300 hover:text-white transition-colors">
                     {t("experiences")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/destinations" className="text-slate-300 hover:text-white transition-colors">
                     {t("destinations")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/categories" className="text-slate-300 hover:text-white transition-colors">
                     {t("all_categories")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/blog" className="text-slate-300 hover:text-white transition-colors">
                     Travel Blog
                   </Link>
                 </li>
@@ -82,22 +82,22 @@ export default function Footer() {
               <h4 className="font-bold text-lg mb-4">{t("company")}</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/about" className="text-slate-300 hover:text-white transition-colors">
                     {t("about_us")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/careers" className="text-slate-300 hover:text-white transition-colors">
                     {t("careers")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">
                     {t("contact_us")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/partners" className="text-slate-300 hover:text-white transition-colors">
                     {t("partner_with_us")}
                   </Link>
                 </li>
@@ -108,22 +108,22 @@ export default function Footer() {
               <h4 className="font-bold text-lg mb-4">{t("support")}</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/help" className="text-slate-300 hover:text-white transition-colors">
                     {t("help_center")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/faq" className="text-slate-300 hover:text-white transition-colors">
                     {t("faq")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/privacy" className="text-slate-300 hover:text-white transition-colors">
                     {t("privacy_policy")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
+                  <Link href="/terms" className="text-slate-300 hover:text-white transition-colors">
                     {t("terms_service")}
                   </Link>
                 </li>
@@ -136,17 +136,15 @@ export default function Footer() {
       {/* Copyright */}
       <div className="border-t border-slate-800 py-6">
         <div className="container flex flex-col md:flex-row justify-between items-center">
-          <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} TravelMind. {t("all_rights_reserved")}
-          </p>
+          <p className="text-slate-400 text-sm">{t("copyright")}</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
+            <Link href="/privacy" className="text-slate-400 text-sm hover:text-white transition-colors">
               {t("privacy")}
             </Link>
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
+            <Link href="/terms" className="text-slate-400 text-sm hover:text-white transition-colors">
               {t("terms")}
             </Link>
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
+            <Link href="/sitemap" className="text-slate-400 text-sm hover:text-white transition-colors">
               {t("sitemap")}
             </Link>
           </div>

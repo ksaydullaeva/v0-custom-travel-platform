@@ -12,8 +12,6 @@ export function LanguageSelector() {
 
   const languages = [
     { code: "en", name: "English" },
-    { code: "es", name: "Español" },
-    { code: "fr", name: "Français" },
     { code: "ru", name: "Русский" },
     { code: "uz", name: "O'zbek" },
   ]
@@ -26,17 +24,17 @@ export function LanguageSelector() {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1 px-2 rounded-full border-primary">
-          <Globe className="h-4 w-4" />
-          <span className="font-medium uppercase">{language}</span>
+        <Button variant="ghost" size="icon">
+          <Globe className="h-5 w-5" />
+          <span className="sr-only">Select language</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
+      <DropdownMenuContent align="end">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
-            className={`${language === lang.code ? "bg-primary/10 font-medium" : ""} cursor-pointer`}
+            className={language === lang.code ? "bg-accent font-medium" : ""}
           >
             {lang.name}
           </DropdownMenuItem>

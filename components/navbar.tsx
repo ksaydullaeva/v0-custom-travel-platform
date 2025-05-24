@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -9,25 +11,18 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Globe, User, Heart, Calendar, Award, LogOut } from "lucide-react"
+import { Menu, Search, Globe, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { LanguageSelector } from "./language-selector"
 import { useTranslation } from "@/lib/i18n"
 import { useAuth } from "@/components/auth/auth-provider"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 export default function Navbar() {
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const pathname = usePathname()
   const { t } = useTranslation()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -52,13 +47,13 @@ export default function Navbar() {
               </Link>
               {user && (
                 <Link
-                  href="/bookings"
+                  href="/itineraries"
                   className={cn(
                     "hover:text-foreground/80",
-                    pathname?.startsWith("/bookings") ? "text-foreground" : "text-foreground/60",
+                    pathname?.startsWith("/itineraries") ? "text-foreground" : "text-foreground/60",
                   )}
                 >
-                  My Bookings
+                  {t("itineraries")}
                 </Link>
               )}
               <Link
@@ -93,14 +88,14 @@ export default function Navbar() {
             </NavigationMenuItem>
             {user && (
               <NavigationMenuItem>
-                <Link href="/bookings" legacyBehavior passHref>
+                <Link href="/itineraries" legacyBehavior passHref>
                   <NavigationMenuLink
                     className={cn(
                       "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                      pathname?.startsWith("/bookings") ? "bg-accent/50" : "",
+                      pathname?.startsWith("/itineraries") ? "bg-accent/50" : "",
                     )}
                   >
-                    My Bookings
+                    {t("itineraries")}
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
@@ -120,58 +115,30 @@ export default function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
         <div className="flex flex-1 items-center justify-end space-x-4">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+            {isSearchOpen ? (
+              <form className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder={t("search_placeholder")}
+                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[300px]"
+                />
+              </form>
+            ) : (
+              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hidden md:flex">
+                <Search className="h-5 w-5" />
+                <span className="sr-only">{t("search")}</span>
+              </Button>
+            )}
+          </div>
           <LanguageSelector />
-
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">User menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/wishlist" className="flex items-center cursor-pointer">
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/bookings" className="flex items-center cursor-pointer">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <span>Bookings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/rewards" className="flex items-center cursor-pointer">
-                    <Award className="mr-2 h-4 w-4" />
-                    <span>Rewards</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut} className="cursor-pointer text-red-500">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/login">
-                <User className="h-5 w-5" />
-                <span className="sr-only">{t("login")}</span>
-              </Link>
-            </Button>
-          )}
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={user ? "/profile" : "/login"}>
+              <User className="h-5 w-5" />
+              <span className="sr-only">{user ? t("profile") : t("login")}</span>
+            </Link>
+          </Button>
         </div>
       </div>
     </header>

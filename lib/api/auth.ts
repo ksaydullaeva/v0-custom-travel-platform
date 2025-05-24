@@ -1,12 +1,9 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { createServerClient } from "@/lib/supabase/server"
 
 export interface UserProfile {
   id: string
   full_name: string | null
   avatar_url: string | null
-  email: string | null
-  preferences: Record<string, any> | null
   created_at: string
   updated_at: string
 }
@@ -18,11 +15,6 @@ export async function signUp(email: string, password: string, fullName: string):
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        full_name: fullName,
-      },
-    },
   })
 
   if (authError || !authData.user) {
@@ -35,17 +27,12 @@ export async function signUp(email: string, password: string, fullName: string):
     .insert({
       id: authData.user.id,
       full_name: fullName,
-      email: email,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     })
     .select()
     .single()
 
   if (profileError) {
     console.error("Error creating user profile:", profileError)
-    // We don't return an error here because the auth account was created successfully
-    // In a production app, you might want to delete the auth account if profile creation fails
   }
 
   return { user: authData.user, error: null }
@@ -95,30 +82,10 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 export async function updateUserProfile(userId: string, profile: Partial<UserProfile>): Promise<UserProfile | null> {
   const supabase = getSupabaseClient()
 
-  // Add updated_at timestamp
-  const updatedProfile = {
-    ...profile,
-    updated_at: new Date().toISOString(),
-  }
-
-  const { data, error } = await supabase.from("user_profiles").update(updatedProfile).eq("id", userId).select().single()
+  const { data, error } = await supabase.from("user_profiles").update(profile).eq("id", userId).select().single()
 
   if (error) {
     console.error("Error updating user profile:", error)
-    return null
-  }
-
-  return data as UserProfile
-}
-
-// Server-side function to get user profile
-export async function getServerUserProfile(userId: string) {
-  const supabase = createServerClient()
-
-  const { data, error } = await supabase.from("user_profiles").select("*").eq("id", userId).single()
-
-  if (error) {
-    console.error("Error fetching user profile:", error)
     return null
   }
 

@@ -11,16 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Upload, Plus, Trash2, X } from "lucide-react"
+import { ArrowLeft, Upload, Plus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { getSupabaseClient } from "@/lib/supabase/client"
-
-interface TourImage {
-  id: string
-  url: string
-  path: string
-  name: string
-}
 
 export default function NewTourPage() {
   const [formData, setFormData] = useState({
@@ -29,17 +22,14 @@ export default function NewTourPage() {
     price: "",
     duration: "",
     location: "",
-    city: "",
-    country: "",
     category: "",
     maxParticipants: "",
     included: [""],
     notIncluded: [""],
     itinerary: [{ title: "", description: "" }],
+    images: [] as string[],
   })
-  const [images, setImages] = useState<TourImage[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [businessProfile, setBusinessProfile] = useState<any>(null)
   const [isLoadingProfile, setIsLoadingProfile] = useState(true)
   const router = useRouter()
@@ -151,107 +141,50 @@ export default function NewTourPage() {
     }
   }
 
-  const generateUniqueFileName = (originalName: string) => {
-    const timestamp = Date.now()
-    const randomString = Math.random().toString(36).substring(2, 15)
-    const fileExtension = originalName.split(".").pop()
-    return `${timestamp}-${randomString}.${fileExtension}`
-  }
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) {
       return
     }
 
-    const files = Array.from(e.target.files)
-    setIsUploadingImage(true)
+    setIsLoading(true)
+    const file = e.target.files[0]
+    const fileExt = file.name.split(".").pop()
+    const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`
+    const filePath = `tour-images/${fileName}`
 
     try {
-      // Use the tour-images bucket we created
-      const bucketName = "tour-images"
+      const { error: uploadError } = await supabase.storage.from("tours").upload(filePath, file)
 
-      const uploadPromises = files.map(async (file) => {
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          throw new Error(`${file.name} is not a valid image file`)
-        }
+      if (uploadError) {
+        throw uploadError
+      }
 
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-          throw new Error(`${file.name} is too large. Maximum size is 10MB`)
-        }
+      const { data } = supabase.storage.from("tours").getPublicUrl(filePath)
 
-        const fileName = generateUniqueFileName(file.name)
-
-        // Upload to Supabase Storage
-        const { error: uploadError, data } = await supabase.storage.from(bucketName).upload(fileName, file, {
-          cacheControl: "3600",
-          upsert: false,
-        })
-
-        if (uploadError) {
-          console.error("Upload error details:", uploadError)
-          throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
-        }
-
-        // Get public URL
-        const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(fileName)
-
-        return {
-          id: Math.random().toString(36).substring(2, 15),
-          url: urlData.publicUrl,
-          path: fileName,
-          name: file.name,
-        }
-      })
-
-      const uploadedImages = await Promise.all(uploadPromises)
-      setImages((prev) => [...prev, ...uploadedImages])
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, data.publicUrl],
+      }))
 
       toast({
-        title: "Images uploaded successfully",
-        description: `${uploadedImages.length} image(s) have been uploaded.`,
+        title: "Image uploaded",
+        description: "Your image has been uploaded successfully.",
       })
     } catch (error: any) {
-      console.error("Upload error:", error)
       toast({
         title: "Upload failed",
-        description: error.message || "Failed to upload images.",
+        description: error.message || "Failed to upload image.",
         variant: "destructive",
       })
     } finally {
-      setIsUploadingImage(false)
-      // Reset file input
-      e.target.value = ""
+      setIsLoading(false)
     }
   }
 
-  const removeImage = async (imageToRemove: TourImage) => {
-    try {
-      const bucketName = "tour-images"
-
-      // Remove from Supabase Storage
-      const { error } = await supabase.storage.from(bucketName).remove([imageToRemove.path])
-
-      if (error) {
-        console.error("Error removing image from storage:", error)
-      }
-
-      // Remove from local state
-      setImages((prev) => prev.filter((img) => img.id !== imageToRemove.id))
-
-      toast({
-        title: "Image removed",
-        description: "Image has been successfully removed.",
-      })
-    } catch (error: any) {
-      console.error("Error removing image:", error)
-      toast({
-        title: "Error",
-        description: "Failed to remove image.",
-        variant: "destructive",
-      })
-    }
+  const removeImage = (index: number) => {
+    const newImages = [...formData.images]
+    newImages.splice(index, 1)
+    setFormData((prev) => ({ ...prev, images: newImages }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -267,36 +200,23 @@ export default function NewTourPage() {
         throw new Error("You must be logged in to create a tour")
       }
 
-      // Prepare location data
-      const locationParts = formData.location.split(",").map((part) => part.trim())
-      const city = formData.city || locationParts[0] || ""
-      const country = formData.country || locationParts[locationParts.length - 1] || ""
-
-      // Create the tour as an experience
+      // Create the tour
       const { data, error } = await supabase
-        .from("experiences")
+        .from("tours")
         .insert({
           business_id: user.id,
           title: formData.title,
           description: formData.description,
-          price: Number.parseFloat(formData.price) || 0,
-          duration: Number.parseInt(formData.duration) || 1,
+          price: Number.parseFloat(formData.price),
+          duration: formData.duration,
           location: formData.location,
-          city: city,
-          country: country,
           category: formData.category,
-          rating: 0, // Default rating for new experiences
-          reviews_count: 0, // Default reviews count
-          image_url: images.length > 0 ? images[0].url : null, // Primary image
-          images: images.map((img) => img.url), // All image URLs
+          max_participants: Number.parseInt(formData.maxParticipants),
           included: formData.included.filter((item) => item.trim() !== ""),
           not_included: formData.notIncluded.filter((item) => item.trim() !== ""),
           itinerary: formData.itinerary.filter((item) => item.title.trim() !== "" || item.description.trim() !== ""),
-          max_participants: Number.parseInt(formData.maxParticipants) || 10,
-          latitude: 0, // Default coordinates (should be set based on location)
-          longitude: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          images: formData.images,
+          status: "active",
         })
         .select()
         .single()
@@ -306,13 +226,12 @@ export default function NewTourPage() {
       }
 
       toast({
-        title: "Tour created successfully!",
-        description: "Your tour has been created and is now available for booking.",
+        title: "Tour created!",
+        description: "Your tour has been created successfully.",
       })
 
       router.push("/business/dashboard/tours")
     } catch (error: any) {
-      console.error("Error creating tour:", error)
       toast({
         title: "Error creating tour",
         description: error.message || "An unexpected error occurred.",
@@ -402,53 +321,30 @@ export default function NewTourPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="duration">Duration (hours)</Label>
+                <Label htmlFor="duration">Duration</Label>
                 <Input
                   id="duration"
                   name="duration"
                   value={formData.duration}
                   onChange={handleChange}
-                  placeholder="e.g., 8"
+                  placeholder="e.g., 7 days / 6 nights"
                   required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Full Location</Label>
-                <Input
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="e.g., Tashkent, Uzbekistan"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  placeholder="e.g., Tashkent"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  placeholder="e.g., Uzbekistan"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g., Tashkent, Samarkand, Bukhara"
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
                 <Select onValueChange={(value) => handleSelectChange("category", value)} value={formData.category}>
@@ -467,19 +363,20 @@ export default function NewTourPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="maxParticipants">Maximum Participants</Label>
-                <Input
-                  id="maxParticipants"
-                  name="maxParticipants"
-                  type="number"
-                  min="1"
-                  value={formData.maxParticipants}
-                  onChange={handleChange}
-                  placeholder="e.g., 12"
-                  required
-                />
-              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="maxParticipants">Maximum Participants</Label>
+              <Input
+                id="maxParticipants"
+                name="maxParticipants"
+                type="number"
+                min="1"
+                value={formData.maxParticipants}
+                onChange={handleChange}
+                placeholder="e.g., 12"
+                required
+              />
             </div>
 
             <div className="space-y-4">
@@ -573,60 +470,45 @@ export default function NewTourPage() {
             <div className="space-y-4">
               <Label>Tour Images</Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {images.map((image, index) => (
-                  <div key={image.id} className="relative rounded-md overflow-hidden h-40 group">
+                {formData.images.map((image, index) => (
+                  <div key={`image-${index}`} className="relative rounded-md overflow-hidden h-40">
                     <img
-                      src={image.url || "/placeholder.svg"}
+                      src={image || "/placeholder.svg"}
                       alt={`Tour image ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        onClick={() => removeImage(image)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    {index === 0 && (
-                      <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-                        Primary
-                      </div>
-                    )}
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2"
+                      onClick={() => removeImage(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
-                <div className="border border-dashed rounded-md flex items-center justify-center h-40 hover:border-primary transition-colors">
+                <div className="border border-dashed rounded-md flex items-center justify-center h-40">
                   <label className="cursor-pointer flex flex-col items-center justify-center w-full h-full">
                     <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                     <span className="text-sm text-muted-foreground">Upload Image</span>
                     <input
                       type="file"
                       accept="image/*"
-                      multiple
                       className="hidden"
                       onChange={handleImageUpload}
-                      disabled={isUploadingImage}
+                      disabled={isLoading}
                     />
                   </label>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Upload high-quality images of your tour. Recommended size: 1200×800 pixels. The first image will be used
-                as the primary image.
+                Upload high-quality images of your tour. Recommended size: 1200x800 pixels.
               </p>
-              {isUploadingImage && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                  Uploading images...
-                </div>
-              )}
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading || isUploadingImage}>
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Creating Tour..." : "Create Tour"}
             </Button>
           </CardFooter>

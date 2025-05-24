@@ -3,20 +3,22 @@ import { getSupabaseClient } from "@/lib/supabase/client"
 export interface Destination {
   id: string
   name: string
-  city: string
-  country: string | null
+  description: string | null
   image_url: string | null
   latitude: number
   longitude: number
-  population: number | null
-  is_featured: boolean
+  country: string | null
+  city: string | null
+  category: string | null
+  rating: number | null
   created_at: string
   updated_at: string
 }
 
 export interface DestinationFilters {
+  category?: string
   country?: string
-  is_featured?: boolean
+  city?: string
   search?: string
 }
 
@@ -30,20 +32,24 @@ export async function getDestinations(
   let query = supabase.from("destinations").select("*")
 
   // Apply filters
+  if (filters.category) {
+    query = query.eq("category", filters.category)
+  }
+
   if (filters.country) {
     query = query.eq("country", filters.country)
   }
 
-  if (filters.is_featured !== undefined) {
-    query = query.eq("is_featured", filters.is_featured)
+  if (filters.city) {
+    query = query.eq("city", filters.city)
   }
 
   if (filters.search) {
-    query = query.or(`name.ilike.%${filters.search}%,city.ilike.%${filters.search}%,country.ilike.%${filters.search}%`)
+    query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
   }
 
   const { data, error } = await query
-    .order("name", { ascending: true })
+    .order("rating", { ascending: false })
     .limit(limit)
     .range(offset, offset + limit - 1)
 
@@ -66,32 +72,4 @@ export async function getDestinationById(id: string): Promise<Destination | null
   }
 
   return data as Destination
-}
-
-export async function getFeaturedDestinations(limit = 6): Promise<Destination[]> {
-  return getDestinations({ is_featured: true }, limit)
-}
-
-export async function getDestinationsByCountry(country: string, limit = 20): Promise<Destination[]> {
-  return getDestinations({ country }, limit)
-}
-
-// Get all unique countries from destinations table
-export async function getCountries(): Promise<string[]> {
-  const supabase = getSupabaseClient()
-
-  const { data, error } = await supabase
-    .from("destinations")
-    .select("country")
-    .not("country", "is", null)
-    .order("country")
-
-  if (error) {
-    console.error("Error fetching countries:", error)
-    return []
-  }
-
-  // Extract unique countries
-  const countries = [...new Set(data.map((item) => item.country))]
-  return countries.filter(Boolean) as string[]
 }
