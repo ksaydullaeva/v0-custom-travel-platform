@@ -18,17 +18,17 @@ export const popularCategories = [
   {
     id: "handcrafting",
     name: "Hand Crafting",
-    image: "/placeholder.svg?height=200&width=200&query=handcraft+workshop+pottery+making",
+    image: "/handcraft-workshop-icon.png",
   },
   {
     id: "nature",
     name: "Nature",
-    image: "/placeholder.svg?height=200&width=200&query=nature+hike+mountains+forest",
+    image: "/placeholder-9j2hl.png",
   },
   {
     id: "adventure",
     name: "Adventure",
-    image: "/placeholder.svg?height=200&width=200&query=adventure+zipline+rafting+extreme",
+    image: "/placeholder-9bel7.png",
   },
 ]
 
@@ -55,7 +55,7 @@ export const featuredExperiences = [
     rating: 4.8,
     reviews: 1243,
     duration: 3,
-    image: "/placeholder.svg?height=300&width=400&query=louvre+museum+paris+mona+lisa",
+    image: "https://images.unsplash.com/photo-1565099824688-e93eb20fe622?q=80&w=1000",
     category: "culture",
   },
   {
@@ -67,7 +67,7 @@ export const featuredExperiences = [
     rating: 4.9,
     reviews: 876,
     duration: 4,
-    image: "/placeholder.svg?height=300&width=400&query=sunset+sailing+santorini+boat",
+    image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000",
     category: "adventure",
   },
   {
@@ -80,7 +80,7 @@ export const featuredExperiences = [
     rating: 4.7,
     reviews: 542,
     duration: 3.5,
-    image: "/placeholder.svg?height=300&width=400&query=italian+cooking+class+pasta+making",
+    image: "https://images.unsplash.com/photo-1507048331197-7d4ac70811cf?q=80&w=1000",
     category: "food",
   },
   {
@@ -93,7 +93,7 @@ export const featuredExperiences = [
     rating: 4.6,
     reviews: 789,
     duration: 2.5,
-    image: "/placeholder.svg?height=300&width=400&query=zipline+jungle+adventure+thailand",
+    image: "https://images.unsplash.com/photo-1622293088099-8f914c98e1e1?q=80&w=1000",
     category: "adventure",
   },
   {
@@ -105,7 +105,7 @@ export const featuredExperiences = [
     rating: 4.8,
     reviews: 1021,
     duration: 2,
-    image: "/placeholder.svg?height=300&width=400&query=prague+old+town+walking+tour",
+    image: "https://images.unsplash.com/photo-1541849546-216549ae216d?q=80&w=1000",
     category: "tours",
   },
   {
@@ -117,7 +117,7 @@ export const featuredExperiences = [
     rating: 4.7,
     reviews: 654,
     duration: 6,
-    image: "/placeholder.svg?height=300&width=400&query=dubai+desert+safari+dunes+sunset",
+    image: "https://images.unsplash.com/photo-1451337516015-6b6e9a44a8a3?q=80&w=1000",
     category: "adventure",
   },
   {
@@ -129,7 +129,7 @@ export const featuredExperiences = [
     rating: 4.5,
     reviews: 432,
     duration: 3,
-    image: "/placeholder.svg?height=300&width=400&query=whale+watching+iceland+humpback",
+    image: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?q=80&w=1000",
     category: "nature",
   },
   {
@@ -141,7 +141,7 @@ export const featuredExperiences = [
     rating: 4.9,
     reviews: 876,
     duration: 5,
-    image: "/placeholder.svg?height=300&width=400&query=napa+valley+wine+tasting+vineyard",
+    image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?q=80&w=1000",
     category: "food",
   },
   {
@@ -153,7 +153,7 @@ export const featuredExperiences = [
     rating: 4.9,
     reviews: 543,
     duration: 3,
-    image: "/placeholder.svg?height=300&width=400&query=cappadocia+hot+air+balloons+sunrise",
+    image: "https://images.unsplash.com/photo-1516466723877-e4ec1d736c8a?q=80&w=1000",
     category: "adventure",
   },
   {
@@ -165,7 +165,7 @@ export const featuredExperiences = [
     rating: 4.8,
     reviews: 321,
     duration: 2,
-    image: "/placeholder.svg?height=300&width=400&query=japanese+pottery+workshop+traditional",
+    image: "https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?q=80&w=1000",
     category: "handcrafting",
   },
   {
@@ -177,7 +177,7 @@ export const featuredExperiences = [
     rating: 4.7,
     reviews: 678,
     duration: 3,
-    image: "/placeholder.svg?height=300&width=400&query=bangkok+street+food+market+tour",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1000",
     category: "food",
   },
   {
@@ -189,7 +189,7 @@ export const featuredExperiences = [
     rating: 4.8,
     reviews: 789,
     duration: 4,
-    image: "/placeholder.svg?height=300&width=400&query=great+barrier+reef+snorkeling+coral",
+    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1000",
     category: "nature",
   },
 ]
@@ -202,7 +202,7 @@ export const topDestinations = [
     country: "France",
     description:
       "The City of Light offers iconic landmarks, world-class museums, and charming neighborhoods to explore.",
-    image: "/paris-eiffel-tower.png",
+    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000",
     experienceCount: 243,
   },
   {
@@ -210,7 +210,7 @@ export const topDestinations = [
     name: "Bali",
     country: "Indonesia",
     description: "A tropical paradise with stunning beaches, lush rice terraces, and vibrant cultural experiences.",
-    image: "/bali-rice-terraces.png",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1000",
     experienceCount: 187,
   },
   {
@@ -218,7 +218,7 @@ export const topDestinations = [
     name: "Tokyo",
     country: "Japan",
     description: "A fascinating blend of ultramodern and traditional, from neon-lit skyscrapers to historic temples.",
-    image: "/tokyo-skyline.png",
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1000",
     experienceCount: 215,
   },
   {
@@ -226,7 +226,7 @@ export const topDestinations = [
     name: "Rome",
     country: "Italy",
     description: "The Eternal City is a living museum of ancient history, Renaissance art, and delicious cuisine.",
-    image: "/rome-colosseum.png",
+    image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1000",
     experienceCount: 198,
   },
   {
@@ -234,7 +234,7 @@ export const topDestinations = [
     name: "New York City",
     country: "USA",
     description: "The Big Apple offers world-famous attractions, diverse neighborhoods, and endless entertainment.",
-    image: "/new-york-skyline.png",
+    image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=1000",
     experienceCount: 276,
   },
   {
@@ -242,7 +242,7 @@ export const topDestinations = [
     name: "Barcelona",
     country: "Spain",
     description: "A vibrant city known for stunning architecture, beautiful beaches, and a lively cultural scene.",
-    image: "/barcelona-sagrada-familia.png",
+    image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?q=80&w=1000",
     experienceCount: 167,
   },
 ]

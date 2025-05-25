@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth"
+import { useAuth } from "@/components/auth/auth-provider" // Updated import path
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -75,18 +75,18 @@ const mockItineraries = [
 ]
 
 export default function ItinerariesPage() {
-  const { user, loading } = useAuth()
+  const { user, isLoading } = useAuth()
   const router = useRouter()
-  const [date, setDate] = useState(null)
+  const [date, setDate] = useState<Date | null>(null)
   const [activeTab, setActiveTab] = useState("upcoming")
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       router.push("/login?redirect=/itineraries")
     }
-  }, [user, loading, router])
+  }, [user, isLoading, router])
 
-  if (loading) {
+  if (isLoading) {
     return <div className="container py-10">Loading...</div>
   }
 
