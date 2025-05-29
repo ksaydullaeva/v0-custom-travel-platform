@@ -1,5 +1,4 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { createServerClient } from "@/lib/supabase/server"
 
 export interface UserProfile {
   id: string
@@ -105,20 +104,6 @@ export async function updateUserProfile(userId: string, profile: Partial<UserPro
 
   if (error) {
     console.error("Error updating user profile:", error)
-    return null
-  }
-
-  return data as UserProfile
-}
-
-// Server-side function to get user profile
-export async function getServerUserProfile(userId: string) {
-  const supabase = createServerClient()
-
-  const { data, error } = await supabase.from("user_profiles").select("*").eq("id", userId).single()
-
-  if (error) {
-    console.error("Error fetching user profile:", error)
     return null
   }
 

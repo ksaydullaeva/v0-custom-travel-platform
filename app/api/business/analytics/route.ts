@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 // Add type definitions
@@ -19,7 +19,26 @@ export async function GET(request: Request) {
   const range = searchParams.get('range') || '30' // Default to last 30 days
 
   const cookieStore = cookies()
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: async (name: string) => {
+          const cookie = await cookieStore
+          return cookie.get(name)?.value
+        },
+        set: async (name: string, value: string, options: any) => {
+          const cookie = await cookieStore
+          cookie.set(name, value, options)
+        },
+        remove: async (name: string, options: any) => {
+          const cookie = await cookieStore
+          cookie.set(name, '', { ...options, maxAge: 0 })
+        },
+      },
+    }
+  )
 
   try {
     // Authenticate the user and ensure they are a business user
