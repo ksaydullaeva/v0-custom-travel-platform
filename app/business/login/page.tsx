@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -9,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { useAuth } from "@/components/auth/auth-provider"
 
 export default function BusinessLoginPage() {
   const [email, setEmail] = useState("")
@@ -19,6 +18,7 @@ export default function BusinessLoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const { signIn } = useAuth()
   const supabase = getSupabaseClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,47 +26,49 @@ export default function BusinessLoginPage() {
     setIsLoading(true)
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // First sign in using auth provider
+      const { success, error } = await signIn(email, password)
+
+      if (!success || error) {
+        throw error || new Error("Sign in failed")
+      }
+
+      // Check if user is a business account
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user?.id) throw new Error("User not found")
+
+      const { data: profileData, error: profileError } = await supabase
+        .from("business_profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single()
+
+      if (profileError && profileError.code !== "PGRST116") {
+        // PGRST116 is "no rows returned" error
+        throw profileError
+      }
+
+      if (!profileData) {
+        toast({
+          title: "Not a business account",
+          description: "This account is not registered as a business. Please use a business account.",
+          variant: "destructive",
+        })
+        await supabase.auth.signOut()
+        setIsLoading(false)
+        return
+      }
+
+      // Just check business_profiles and redirect
+      console.log("User is a business account")
+      toast({
+        title: "Login successful!",
+        description: "Welcome back to your business dashboard.",
       })
 
-      if (error) {
-        throw error
-      }
-
-      if (data.user) {
-        // Check if user is a business account
-        const { data: profileData, error: profileError } = await supabase
-          .from("business_profiles")
-          .select("*")
-          .eq("id", data.user.id)
-          .single()
-
-        if (profileError && profileError.code !== "PGRST116") {
-          // PGRST116 is "no rows returned" error
-          throw profileError
-        }
-
-        if (!profileData) {
-          toast({
-            title: "Not a business account",
-            description: "This account is not registered as a business. Please use a business account.",
-            variant: "destructive",
-          })
-          await supabase.auth.signOut()
-          setIsLoading(false)
-          return
-        }
-
-        toast({
-          title: "Login successful!",
-          description: "Welcome back to your business dashboard.",
-        })
-
-        // Redirect to business dashboard
-        router.push("/business/dashboard")
-      }
+      console.log("redirecting to business dashboard")
+      // Redirect to business dashboard
+      router.push("/business/dashboard")
     } catch (error: any) {
       toast({
         title: "Login failed",
@@ -83,14 +85,15 @@ export default function BusinessLoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-            <Globe className="h-8 w-8 text-primary" />
-            <span>TravelMind</span>
+            <span className="flex items-center gap-2 font-bold text-xl mb-4">
+              <img src="/noBgColor.png" alt="BTLE Logo" className="h-8 w-auto" />
+            </span>
           </Link>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Business Login</CardTitle>
+            <CardTitle>Login</CardTitle>
             <CardDescription>Sign in to your business account to manage your tours</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>

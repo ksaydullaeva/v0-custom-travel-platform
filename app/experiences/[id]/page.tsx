@@ -30,6 +30,7 @@ export default function ExperienceDetailPage() {
         const data = await getExperienceById(id as string)
         if (data) {
           setExperience(data)
+          console.log("Fetched experience data:", data)
         } else {
           setError("Experience not found")
         }

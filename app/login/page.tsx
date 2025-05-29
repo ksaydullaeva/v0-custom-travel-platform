@@ -53,8 +53,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-            <Globe className="h-8 w-8 text-primary" />
-            <span>TravelMind</span>
+            <span className="flex items-center gap-2 font-bold text-xl mb-4"><img src="/noBgColor.png" alt="BTLE Logo" className="h-8 w-auto" /></span>
           </Link>
         </div>
 

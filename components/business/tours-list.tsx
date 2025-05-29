@@ -5,9 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Package, Edit, Trash2, Eye, Plus } from "lucide-react"
-import { getSupabaseClient } from "@/lib/supabase/client"
-import { useToast } from "@/hooks/use-toast"
+import { Package, Edit, Trash2, Eye } from "lucide-react"
 
 interface Tour {
   id: string
@@ -25,111 +23,24 @@ interface Tour {
   created_at: string
 }
 
-export function BusinessToursList() {
-  const [tours, setTours] = useState<Tour[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const supabase = getSupabaseClient()
-  const { toast } = useToast()
+interface BusinessToursListProps {
+    tours: Tour[];
+    onDeleteTour: (tourId: string) => void;
+}
 
-  useEffect(() => {
-    const fetchTours = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
-
-        if (!user) return
-
-        const { data, error } = await supabase
-          .from("experiences")
-          .select("*")
-          .eq("business_id", user.id)
-          .order("created_at", { ascending: false })
-
-        if (error) throw error
-
-        setTours(data || [])
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: "Failed to load tours. Please try again.",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchTours()
-  }, [supabase, toast])
-
-  const deleteTour = async (tourId: string) => {
-    try {
-      const { error } = await supabase.from("experiences").delete().eq("id", tourId)
-
-      if (error) throw error
-
-      setTours((prev) => prev.filter((tour) => tour.id !== tourId))
-      toast({
-        title: "Tour deleted",
-        description: "Tour has been successfully deleted.",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to delete tour. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }
-
-  if (isLoading) {
+export function BusinessToursList({ tours, onDeleteTour }: BusinessToursListProps) {
+  if (!tours || tours.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="flex flex-col items-center justify-center py-8">
+        <Package className="h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">No tours found</p>
+        <p className="text-sm text-muted-foreground mb-4">Create your first tour to get started.</p>
       </div>
-    )
-  }
-
-  if (tours.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Tours</CardTitle>
-          <CardDescription>You haven't created any tours yet.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8">
-            <Package className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">No tours found</p>
-            <p className="text-sm text-muted-foreground mb-4">Create your first tour to get started.</p>
-            <Button asChild>
-              <Link href="/business/dashboard/tours/new">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Your First Tour
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     )
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Your Tours</h2>
-          <p className="text-muted-foreground">Manage your tour listings</p>
-        </div>
-        <Button asChild>
-          <Link href="/business/dashboard/tours/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Tour
-          </Link>
-        </Button>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tours.map((tour) => (
           <Card key={tour.id} className="overflow-hidden">
@@ -174,7 +85,7 @@ export function BusinessToursList() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => deleteTour(tour.id)}
+                    onClick={() => onDeleteTour(tour.id)}
                     className="text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />

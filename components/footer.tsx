@@ -32,8 +32,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
-                <Globe className="h-6 w-6 text-blue-400" />
-                <span>TravelMind</span>
+                <img src="/noBgWhite.png" alt="BTLE Logo" className="h-8 w-auto" />
               </Link>
               <p className="text-slate-300 mb-4">{t("discover_amazing")}</p>
               <div className="flex gap-4">
@@ -137,7 +136,7 @@ export default function Footer() {
       <div className="border-t border-slate-800 py-6">
         <div className="container flex flex-col md:flex-row justify-between items-center">
           <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} TravelMind. {t("all_rights_reserved")}
+            © {new Date().getFullYear()} BTLE. {t("all_rights_reserved")}
           </p>
           <div className="flex gap-4 mt-4 md:mt-0">
             <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">

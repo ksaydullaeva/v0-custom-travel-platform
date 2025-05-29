@@ -12,8 +12,8 @@ import { AuthProvider } from "@/components/auth/auth-provider"
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "TravelMind - Discover Unique Travel Experiences",
-  description: "Find and book unique travel experiences around the world with TravelMind",
+  title: "BTLE - Discover Unique Travel Experiences",
+  description: "Find and book unique travel experiences around the world with BTLE",
     generator: 'v0.dev'
 }
 
