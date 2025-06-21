@@ -1,0 +1,34 @@
+{
+  "agencies": [
+    {
+      "id": "1",
+      "name": "Human House",
+      "logo": "/human-house.jpeg",
+      "website": "https://human-house.com"
+    },
+    {
+      "id": "2", 
+      "name": "Govorit Tashkent",
+      "logo": "/govorit-tashkent.jpeg",
+      "website": "https://www.instagram.com/govorit_tashkent/"
+    },
+    {
+      "id": "3",
+      "name": "Wine Time", 
+      "logo": "/wine-time.jpeg",
+      "website": "https://www.instagram.com/winetime.uz/"
+    },
+    {
+      "id": "4",
+      "name": "ReverieTour", 
+      "logo": "/reverietour.jpeg",
+      "website": "https://www.instagram.com/winetime.uz/"
+    },
+    {
+      "id": "5",
+      "name": "Ramz Jewel", 
+      "logo": "/RamzJewel.jpeg",
+      "website": "https://www.instagram.com/winetime.uz/"
+    }
+  ]
+} 

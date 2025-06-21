@@ -93,7 +93,7 @@ export default function Navbar() {
           </SheetContent>
         </Sheet>
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <img src="/noBgColor.png" alt="BTLE Logo" className="h-8 w-auto" />
+          <img src="/noBgLogo.png" alt="BTLE Logo" className="h-16 w-auto" />
         </Link>
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>

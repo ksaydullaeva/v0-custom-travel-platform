@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
-                <img src="/noBgWhite.png" alt="BTLE Logo" className="h-8 w-auto" />
+                <img src="/noBgWhiteLogo.png" alt="BTLE Logo" className="h-16 w-auto" />
               </Link>
               <p className="text-slate-300 mb-4">{t("discover_amazing")}</p>
               <div className="flex gap-4">
