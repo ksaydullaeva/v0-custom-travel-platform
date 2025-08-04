@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from "@/lib/i18n"
 import { AuthProvider } from "@/components/auth/auth-provider"
+import 'leaflet/dist/leaflet.css';
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 

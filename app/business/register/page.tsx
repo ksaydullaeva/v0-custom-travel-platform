@@ -133,12 +133,6 @@ export default function BusinessRegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-          <span className="flex items-center gap-2 font-bold text-xl mb-4"><img src="/noBgColor.png" alt="BTLE Logo" className="h-8 w-auto" /></span>
-          </Link>
-        </div>
-
         <Card>
           <CardHeader>
             <CardTitle>Register Your Travel Agency</CardTitle>

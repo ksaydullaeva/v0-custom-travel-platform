@@ -122,6 +122,11 @@ export function DatePicker({ onSelect, onClose }: DatePickerProps) {
     const isEnd = isEndDate(date)
     const inRange = isInRange(date)
 
+    // Calculate today (set time to 00:00:00 for accurate comparison)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const isPast = date < today
+
     calendarDays.push(
       <button
         key={day}
@@ -129,9 +134,11 @@ export function DatePicker({ onSelect, onClose }: DatePickerProps) {
         className={`h-10 w-10 rounded-full flex items-center justify-center text-lg
           ${isStart || isEnd ? "bg-blue-600 text-white" : ""}
           ${inRange ? "bg-blue-100 text-black" : "text-black hover:bg-gray-100"}
+          ${isPast ? "text-gray-300 cursor-not-allowed bg-gray-50 hover:bg-gray-50" : ""}
         `}
-        onClick={(e) => handleDateClick(date, e)}
-        onMouseEnter={() => handleDateHover(date)}
+        onClick={isPast ? undefined : (e) => handleDateClick(date, e)}
+        onMouseEnter={isPast ? undefined : () => handleDateHover(date)}
+        disabled={isPast}
       >
         {day}
       </button>,
@@ -173,28 +180,28 @@ export function DatePicker({ onSelect, onClose }: DatePickerProps) {
       <div className="flex justify-between items-center mb-4">
         <button
           type="button" // Prevent form submission
-          className="p-1 rounded-full hover:bg-gray-100"
+          className="p-1 rounded-full bg-gray-100 border border-blue-500 shadow-md hover:bg-blue-100"
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
             prevMonth()
           }}
         >
-          <ChevronRight className="h-5 w-5 transform rotate-180" />
+          <ChevronRight className="h-5 w-5 text-blue-600 transform rotate-180" />
         </button>
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl text-black font-bold">
           {monthName} {viewYear}
         </h2>
         <button
           type="button" // Prevent form submission
-          className="p-1 rounded-full hover:bg-gray-100"
+          className="p-1 rounded-full bg-gray-100 border border-blue-500 shadow-md hover:bg-blue-100"
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
             nextMonth()
           }}
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-5 w-5 text-blue-600" />
         </button>
       </div>
 

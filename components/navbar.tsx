@@ -29,12 +29,18 @@ export default function Navbar() {
   const { t } = useTranslation()
   const { user, signOut } = useAuth()
   const isBusinessUser = user?.user_metadata?.user_type === 'business'
+  
+  // Check if we're on an experience detail page
+  const isExperienceDetailPage = pathname?.match(/^\/experiences\/[^\/]+$/)
 
   console.log("user: ", user)
   console.log("isBusinessUser: " + isBusinessUser)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn(
+      "w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      !isExperienceDetailPage && "sticky top-0 z-50"
+    )}>
       <div className="container flex h-16 items-center">
         <Sheet>
           <SheetTrigger asChild>

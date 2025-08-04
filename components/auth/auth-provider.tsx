@@ -269,7 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         toast({
           title: "Account created successfully",
-          description: "Welcome to TravelMind!",
+          description: "Welcome to Btle!",
         })
 
         // Redirect to experiences page after successful signup

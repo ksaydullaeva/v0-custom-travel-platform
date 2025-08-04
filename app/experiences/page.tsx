@@ -19,6 +19,13 @@ import { getExperiences, type Experience, type ExperienceFilters } from "@/lib/a
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
+
 export default function ExperiencesPage() {
   const { t } = useTranslation()
   const searchParams = useSearchParams()
@@ -36,15 +43,22 @@ export default function ExperiencesPage() {
   const [priceRange, setPriceRange] = useState([0, 500])
   const [durationFilters, setDurationFilters] = useState<string[]>([])
 
-  // Category options for filter
-  const categoryOptions = [
-    { id: "tours", label: t("tours") },
-    { id: "handcraft", label: t("hand_crafting") },
-    { id: "food", label: t("food_drink") },
-    { id: "culture", label: t("culture") },
-    { id: "adventure", label: t("adventure") },
-    { id: "nature", label: t("nature") },
-  ]
+  // Categories fetched from DB
+  const [categories, setCategories] = useState<Category[]>([])
+
+  // Load categories on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const supabase = (await import('@/lib/supabase/client')).getSupabaseClient()
+        const { data, error } = await supabase.from('categories').select('id, name, slug').order('name')
+        if (error) throw error
+        setCategories(data as Category[])
+      } catch (err) {
+        console.error('Failed to load categories', err)
+      }
+    })()
+  }, [])
 
   // Duration options for filter
   const durationOptions = [
@@ -79,32 +93,51 @@ export default function ExperiencesPage() {
     }
 
     if (destinationFilter) {
-      filters.location = destinationFilter
+      // Try to match as city first, then as country
+      filters.city = destinationFilter
     }
 
     if (selectedCategories.length > 0) {
-      filters.category = selectedCategories[0] // API currently supports only one category
+      // Convert slug back to category name
+      const category = categories.find(c => c.slug === selectedCategories[0])
+      if (category) {
+        filters.category = category.name
+      }
     }
 
-    filters.minPrice = priceRange[0]
-    filters.maxPrice = priceRange[1]
+    // Only apply price range if it's different from default
+    if (priceRange[0] !== 0 || priceRange[1] !== 500) {
+      filters.minPrice = priceRange[0]
+      filters.maxPrice = priceRange[1] === 500 ? undefined : priceRange[1]
+    }
 
     // Handle duration filters
-    if (durationFilters.includes("less-than-3")) {
-      filters.maxDuration = 3
-    }
-
-    if (durationFilters.includes("3-to-6")) {
-      if (filters.minDuration === undefined) filters.minDuration = 3
-      if (filters.maxDuration === undefined) filters.maxDuration = 6
-    }
-
-    if (durationFilters.includes("more-than-6")) {
-      filters.minDuration = 6
+    if (durationFilters.length > 0) {
+      durationFilters.forEach(filter => {
+        switch (filter) {
+          case "less-than-3":
+            filters.maxDuration = 3
+            break
+          case "3-to-6":
+            if (filters.minDuration === undefined || filters.minDuration < 3) {
+              filters.minDuration = 3
+            }
+            if (filters.maxDuration === undefined || filters.maxDuration > 6) {
+              filters.maxDuration = 6
+            }
+            break
+          case "more-than-6":
+            filters.minDuration = 6
+            if (filters.maxDuration !== undefined && filters.maxDuration < 6) {
+              delete filters.maxDuration
+            }
+            break
+        }
+      })
     }
 
     return filters
-  }, [searchQuery, destinationFilter, selectedCategories, priceRange, durationFilters])
+  }, [searchQuery, destinationFilter, selectedCategories, priceRange, durationFilters, categories])
 
   // Fetch experiences from API
   const fetchExperiences = useCallback(async () => {
@@ -252,14 +285,14 @@ export default function ExperiencesPage() {
               <div className="mb-6">
                 <h3 className="font-medium mb-3">{t("category")}</h3>
                 <div className="space-y-2">
-                  {categoryOptions.map((category) => (
+                  {categories.map((category) => (
                     <div key={category.id} className="flex items-center space-x-2">
                       <Checkbox
-                        id={`category-${category.id}`}
-                        checked={selectedCategories.includes(category.id)}
-                        onCheckedChange={(checked) => handleCategoryChange(category.id, checked === true)}
+                        id={`category-${category.slug}`}
+                        checked={selectedCategories.includes(category.slug)}
+                        onCheckedChange={(checked) => handleCategoryChange(category.slug, checked === true)}
                       />
-                      <Label htmlFor={`category-${category.id}`}>{category.label}</Label>
+                      <Label htmlFor={`category-${category.slug}`}>{category.name}</Label>
                     </div>
                   ))}
                 </div>

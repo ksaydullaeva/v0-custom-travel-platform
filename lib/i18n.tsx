@@ -110,6 +110,8 @@ const translations = {
     terms: "Terms",
     sitemap: "Sitemap",
     all_rights_reserved: "All rights reserved.",
+    success: "Success",
+    newsletter_subscribed: "You have successfully subscribed to our newsletter",
 
     // Experiences page
     filters: "Filters",
@@ -262,6 +264,8 @@ const translations = {
     terms: "Условия",
     sitemap: "Карта сайта",
     all_rights_reserved: "Все права защищены.",
+    success: "Успешно",
+    newsletter_subscribed: "Вы успешно подписались на нашу рассылку",
 
     // Experiences page
     filters: "Фильтры",
@@ -417,6 +421,8 @@ const translations = {
     terms: "Shartlar",
     sitemap: "Sayt xaritasi",
     all_rights_reserved: "Barcha huquqlar himoyalangan.",
+    success: "Muvaffaqiyatli",
+    newsletter_subscribed: "Siz bizning axborotnomamizga muvaffaqiyatli obuna bo'ldingiz",
 
     // Experiences page
     filters: "Filtrlar",

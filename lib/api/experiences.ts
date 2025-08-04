@@ -1,22 +1,36 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
 
+export interface AgeCategory {
+  label: string;
+  min: number;
+  max: number | null;
+}
+
+export interface CancellationRule {
+  hours_before: number; // cancel at least this many hours before start
+  refund_percent: number; // percent refund
+}
+
 export interface Experience {
-  id: string
-  title: string
-  description: string
-  location: string
-  price: number
-  rating: number
-  reviews_count: number
-  duration: number
-  image_url: string
-  category: string
-  city: string
-  country: string
-  latitude: number
-  longitude: number
-  created_at: string
-  updated_at: string
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  rating: number;
+  reviews_count: number;
+  duration: number;
+  image_url: string;
+  category: string;
+  city: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  created_at: string;
+  updated_at: string;
+  age_categories?: AgeCategory[]; // Array of age category objects
+  additional_info?: string | null; // optional bullet-point info (newline separated)
+  cancellation_policy?: CancellationRule[]; // array of cancellation rules
 }
 
 export interface ExperienceFilters {
@@ -30,6 +44,31 @@ export interface ExperienceFilters {
   search?: string
 }
 
+// Add interface for PackageOption
+export interface StartEndTime {
+  id: string;
+  package_option_id: string;
+  start_time: string; // HH:MM:SS
+  end_time: string | null;
+}
+
+export interface PackageOption {
+  id: string;
+  experience_id: string;
+  name: string;
+  description: string;
+  inclusions: string[];
+  age_categories?: AgeCategory[];
+  exclusions: string[];
+  meeting_point_address?: string;
+  meeting_point_lat?: number;
+  meeting_point_lng?: number;
+  meeting_point_details?: string;
+  meeting_point_start_time?: string;
+  meeting_point_end_time?: string;
+  created_at: string;
+}
+
 // Function to get experiences with client-side Supabase client
 export async function getExperiences(
   filters: ExperienceFilters = {},
@@ -40,7 +79,7 @@ export async function getExperiences(
 ): Promise<Experience[]> {
   const supabase = getSupabaseClient()
 
-  let query = supabase.from("experiences").select("*")
+  let query = supabase.from("experiences").select("*").eq("status", "active")
 
   // Apply filters
   if (filters.category) {
@@ -104,7 +143,20 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
     return null
   }
 
-  return data as Experience
+  if (!data) return null;
+
+  // Parse JSONB fields if necessary
+  let cancellation_policy: CancellationRule[] | undefined = undefined;
+  if (data.cancellation_policy) {
+    cancellation_policy = Array.isArray(data.cancellation_policy)
+      ? data.cancellation_policy
+      : JSON.parse(data.cancellation_policy);
+  }
+
+  return {
+    ...(data as any),
+    cancellation_policy,
+  } as Experience
 }
 
 // Function to get experiences by city
@@ -135,4 +187,88 @@ export async function getCategories(): Promise<string[]> {
   // Extract unique categories
   const categories = [...new Set(data.map((item) => item.category))]
   return categories.filter(Boolean) as string[]
+}
+
+// Fetch package options for a given experience
+export async function getStartEndTimesForPackageOption(packageOptionId: string): Promise<StartEndTime[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('package_option_start_end_times')
+    .select('*')
+    .eq('package_option_id', packageOptionId);
+  if (error) {
+    console.error('Error fetching start/end times:', error);
+    return [];
+  }
+  return data as StartEndTime[];
+}
+
+export async function getPackageOptionsForExperience(experienceId: string): Promise<PackageOption[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('package_options')
+    .select('*')
+    .eq('experience_id', experienceId);
+
+  if (error) {
+    console.error('Error fetching package options:', error);
+    return [];
+  }
+
+  // Parse inclusions/exclusions JSONB if needed
+  return (data || []).map((pkg: any) => ({
+    ...pkg,
+    inclusions: Array.isArray(pkg.inclusions) ? pkg.inclusions : (pkg.inclusions ? JSON.parse(pkg.inclusions) : []),
+    exclusions: Array.isArray(pkg.exclusions) ? pkg.exclusions : (pkg.exclusions ? JSON.parse(pkg.exclusions) : []),
+  })) as PackageOption[];
+}
+
+// Reviews interface and fetch function
+export interface ExperienceReview {
+  id: string;
+  experience_id: string;
+  user_name: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+export async function getReviewsForExperience(experienceId: string): Promise<ExperienceReview[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('experience_id', experienceId);
+
+  if (error) {
+    console.error('Error fetching reviews:', error);
+    return [];
+  }
+  return data as ExperienceReview[];
+}
+
+export interface PackageItineraryStep {
+  id: string;
+  package_option_id: string;
+  day: number;
+  title: string;
+  description: string;
+  duration: string;
+  order_index: number;
+}
+
+export async function getPackageItinerarySteps(packageOptionId: string): Promise<PackageItineraryStep[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('package_itinerary_steps')
+    .select('*')
+    .eq('package_option_id', packageOptionId)
+    .order('day', { ascending: true })
+    .order('order_index', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching package itinerary steps:', error);
+    return [];
+  }
+  return data as PackageItineraryStep[];
 }

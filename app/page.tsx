@@ -147,7 +147,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="flex-1 pl-6 relative" ref={datePickerRef}>
-                <div className="text-sm font-medium text-gray-800">When</div>
+                <div className="text-sm font-medium text-gray-800">When?</div>
                 <input
                   placeholder="Select Dates"
                   className="w-full border-none focus:outline-none text-gray-600 placeholder:text-gray-400 bg-transparent cursor-pointer"

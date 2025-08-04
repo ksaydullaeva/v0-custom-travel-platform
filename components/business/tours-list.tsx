@@ -21,6 +21,7 @@ interface Tour {
   rating: number
   reviews_count: number
   created_at: string
+  status: string
 }
 
 interface BusinessToursListProps {
@@ -92,7 +93,7 @@ export function BusinessToursList({ tours, onDeleteTour }: BusinessToursListProp
                   </Button>
                 </div>
                 <Badge variant="outline" className="text-xs">
-                  Active
+                  {tour.status}
                 </Badge>
               </div>
             </CardContent>

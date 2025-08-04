@@ -53,7 +53,7 @@ export default function BusinessToursPage() {
       // Fetch experiences belonging to the current business user
       const { data: toursData, error: toursError } = await supabase
         .from('experiences') // Assuming your tours are in the 'experiences' table
-        .select('id, title, description, price, location, city, country, category, image_url, images, duration, rating, reviews_count, created_at') // Select all necessary fields
+        .select('id, title, description, price, location, city, country, category, image_url, images, duration, rating, reviews_count, created_at, status') // Select all necessary fields
         .eq('business_id', user.id) // Filter by the current business user's ID
         .order('created_at', { ascending: false })
 
