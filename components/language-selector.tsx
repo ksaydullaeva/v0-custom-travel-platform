@@ -12,8 +12,6 @@ export function LanguageSelector() {
 
   const languages = [
     { code: "en", name: "English" },
-    { code: "es", name: "Español" },
-    { code: "fr", name: "Français" },
     { code: "ru", name: "Русский" },
     { code: "uz", name: "O'zbek" },
   ]

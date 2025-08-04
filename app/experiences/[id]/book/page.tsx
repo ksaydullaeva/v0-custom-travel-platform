@@ -146,38 +146,43 @@ export default function BookingPage() {
       // In a real app, you would process payment with Stripe here
       // For now, we'll just create a booking record
 
-      const { data, error } = await supabase
-        .from("bookings")
-        .insert({
-          user_id: user?.id,
-          experience_id: id,
-          booking_date: selectedDate?.toISOString(),
-          participants: participants,
-          total_price: calculateTotalPrice(),
-          status: "confirmed",
-          contact_email: contactEmail,
-          contact_phone: contactPhone,
-          special_requests: specialRequests || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          payment_status: "pending", // This would be "paid" in a real implementation
-        })
-        .select()
+      // COMMENTING OUT BOOKING CREATION AND PAYMENT LOGIC
+      // const { data, error } = await supabase
+      //   .from("bookings")
+      //   .insert({
+      //     user_id: user?.id,
+      //     experience_id: id,
+      //     booking_date: selectedDate?.toISOString(),
+      //     participants: participants,
+      //     total_price: calculateTotalPrice(),
+      //     status: "confirmed",
+      //     contact_email: contactEmail,
+      //     contact_phone: contactPhone,
+      //     special_requests: specialRequests || null,
+      //     created_at: new Date().toISOString(),
+      //     updated_at: new Date().toISOString(),
+      //     payment_status: "pending", // This would be "paid" in a real implementation
+      //   })
+      //   .select()
 
-      if (error) {
-        throw new Error(error.message)
-      }
+      // if (error) {
+      //   throw new Error(error.message)
+      // }
 
-      // Clear the timer
+      // Placeholder message instead of proceeding with payment/booking
+      setBookingError("Payment processing is currently disabled.")
+
+      // Clear the timer (optional, depends on desired behavior when disabled)
       if (timerRef.current) {
         clearInterval(timerRef.current)
       }
 
-      // Redirect to success page
-      router.push(`/bookings?success=true`)
+      // Optional: Redirect to a different page or stay on the current one
+      // router.push(`/bookings?success=true`) // Remove or comment out actual redirect
+
     } catch (err: any) {
-      console.error("Error creating booking:", err)
-      setBookingError(err.message || "Failed to process payment")
+      console.error("Error processing payment/booking:", err) // Update log message
+      setBookingError(err.message || "Failed to process payment/booking") // Update error message
     } finally {
       setIsSubmitting(false)
     }

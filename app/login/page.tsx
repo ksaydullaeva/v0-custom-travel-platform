@@ -51,13 +51,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-            <Globe className="h-8 w-8 text-primary" />
-            <span>TravelMind</span>
-          </Link>
-        </div>
-
         <Card>
           <CardHeader>
             <CardTitle>{t("login")}</CardTitle>

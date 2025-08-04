@@ -1,5 +1,4 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { createServerClient } from "@/lib/supabase/server"
 
 export type Todo = {
   id: string
@@ -69,22 +68,4 @@ export async function deleteTodo(id: string) {
   }
 
   return true
-}
-
-// Server-side functions
-export async function getUserTodosServer(userId: string) {
-  const supabase = createServerClient()
-
-  const { data, error } = await supabase
-    .from("todos")
-    .select("*")
-    .eq("user_id", userId)
-    .order("due_date", { ascending: true })
-
-  if (error) {
-    console.error("Error fetching todos:", error)
-    throw new Error("Failed to fetch todos")
-  }
-
-  return data as Todo[]
 }

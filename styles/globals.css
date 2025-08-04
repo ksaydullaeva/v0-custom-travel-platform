@@ -92,3 +92,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Fallback if leaflet.css races in after the map rendered */
+.leaflet-container img.leaflet-tile { width: 256px; height: 256px; }

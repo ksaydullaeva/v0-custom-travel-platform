@@ -1,22 +1,19 @@
-import { createServerClient as createServerClientBase } from "@supabase/ssr"
+import { createServerClient, createServerClient as createServerClientBase } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-export function createServerClient() {
-  const cookieStore = cookies()
-
-  return createServerClientBase(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
-    cookies: {
-      get(name: string) {
-        return cookieStore.get(name)?.value
-      },
-      set(name: string, value: string, options: any) {
-        cookieStore.set({ name, value, ...options })
-      },
-      remove(name: string, options: any) {
-        cookieStore.set({ name, value: "", ...options })
-      },
-    },
-  })
+export async function getSupabaseServerClient() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: (name: string) => cookieStore.get(name)?.value,
+        set: (name: string, value: string, options: any) => cookieStore.set({ name, value, ...options }),
+        remove: (name: string, options: any) => cookieStore.set({ name, value: "", ...options }),
+      }
+    }
+  )
 }
 
 // Create a separate admin client that uses the service role key
@@ -35,8 +32,4 @@ export function createAdminClient() {
       },
     },
   )
-}
-
-export function getSupabaseServerClient() {
-  return createServerClient()
 }

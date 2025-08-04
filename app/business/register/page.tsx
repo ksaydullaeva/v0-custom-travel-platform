@@ -83,11 +83,11 @@ export default function BusinessRegisterPage() {
           },
         },
       })
-
+      console.log("data: ", data)
       if (error) {
         throw error
       }
-
+      console.log("data: ", data)
       if (data.user) {
         // Create business profile
         const { error: profileError } = await supabase.from("business_profiles").insert({
@@ -102,14 +102,22 @@ export default function BusinessRegisterPage() {
         if (profileError) {
           throw profileError
         }
-
-        toast({
-          title: "Registration successful!",
-          description: "Your business account has been created. Please check your email for verification.",
-        })
-
-        // Redirect to business dashboard
-        router.push("/business/dashboard")
+        console.log("data: ", data)
+        if (data.session) {
+          // User is logged in, redirect to dashboard
+          toast({
+            title: "Registration successful!",
+            description: "Your business account has been created.",
+          })
+          router.push("/business/dashboard")
+        } else {
+          // User needs to confirm email
+          toast({
+            title: "Registration successful!",
+            description: "Please check your email to verify your account before logging in.",
+          })
+          router.push("/business/login")
+        }
       }
     } catch (error: any) {
       toast({
@@ -125,13 +133,6 @@ export default function BusinessRegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 font-bold text-2xl">
-            <Globe className="h-8 w-8 text-primary" />
-            <span>TravelMind</span>
-          </Link>
-        </div>
-
         <Card>
           <CardHeader>
             <CardTitle>Register Your Travel Agency</CardTitle>

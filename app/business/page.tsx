@@ -2,12 +2,16 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Globe, BarChart3, CreditCard } from "lucide-react"
+import agenciesData from "@/lib/data/agencies.json"
+import { AgencyLogos } from "@/components/business/agency-logos"
 
 export default function BusinessPage() {
+  const agencies = agenciesData.agencies
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight mb-4">TravelMind for Business</h1>
+        <h1 className="text-4xl font-bold tracking-tight mb-4">BTLE for Business</h1>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
           Expand your reach and grow your travel agency business by listing your tours on our platform
         </p>
@@ -101,7 +105,7 @@ export default function BusinessPage() {
           </div>
           <div className="bg-background rounded-lg p-6 shadow-lg">
             <img
-              src="/placeholder.svg?height=300&width=500"
+              src="/dashboard_screen.png?height=300&width=500"
               alt="Business dashboard preview"
               className="rounded-md w-full"
             />
@@ -111,14 +115,7 @@ export default function BusinessPage() {
 
       <div className="text-center mb-16">
         <h2 className="text-3xl font-bold mb-6">Join Hundreds of Travel Agencies</h2>
-        <div className="flex flex-wrap justify-center gap-8 items-center">
-          {/* Placeholder for agency logos */}
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="bg-muted/50 h-16 w-32 rounded flex items-center justify-center">
-              <span className="text-muted-foreground">Agency {i}</span>
-            </div>
-          ))}
-        </div>
+        <AgencyLogos agencies={agencies} />
       </div>
 
       <div className="bg-primary text-primary-foreground rounded-lg p-8 text-center">

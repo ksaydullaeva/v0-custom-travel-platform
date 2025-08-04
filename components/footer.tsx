@@ -1,155 +1,79 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Globe, Facebook, Twitter, Instagram, Youtube } from "lucide-react"
-import { useTranslation } from "@/lib/i18n"
+import Image from "next/image"
+import { Phone, Mail, Facebook, Twitter, Instagram, Youtube } from "lucide-react"
 
 export default function Footer() {
-  const { t } = useTranslation()
-
   return (
-    <footer className="bg-slate-900 text-white">
-      {/* Newsletter Section */}
-      <div className="container py-12">
-        <div className="max-w-3xl mx-auto text-center">
-          <h3 className="text-2xl font-bold mb-2">{t("subscribe_newsletter")}</h3>
-          <p className="text-slate-300 mb-6">{t("get_latest")}</p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              placeholder={t("enter_email")}
-              className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-400"
-            />
-            <Button className="bg-blue-600 hover:bg-blue-700">{t("subscribe")}</Button>
+    <footer className="bg-[#0F172A] text-white py-12">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Logo and Social Media */}
+          <div className="space-y-6">
+            <Link href="/">
+              <Image
+                src="/noBgWhiteLogo.png"
+                alt="BTLE Logo"
+                width={120}
+                height={40}
+                className="mb-4"
+              />
+            </Link>
+            {/* Social Media Icons */}
+            <div className="flex gap-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300">
+                <Facebook size={20} />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300">
+                <Twitter size={20} />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300">
+                <Instagram size={20} />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300">
+                <Youtube size={20} />
+              </a>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Main Footer */}
-      <div className="border-t border-slate-800">
-        <div className="container py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <Link href="/" className="flex items-center gap-2 font-bold text-xl mb-4">
-                <Globe className="h-6 w-6 text-blue-400" />
-                <span>TravelMind</span>
-              </Link>
-              <p className="text-slate-300 mb-4">{t("discover_amazing")}</p>
-              <div className="flex gap-4">
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white hover:bg-slate-800">
-                  <Facebook className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white hover:bg-slate-800">
-                  <Twitter className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white hover:bg-slate-800">
-                  <Instagram className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-300 hover:text-white hover:bg-slate-800">
-                  <Youtube className="h-5 w-5" />
-                </Button>
+          {/* Support Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/help" className="hover:text-gray-300">Help Center</Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-gray-300">FAQ</Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-gray-300">Privacy Policy</Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-gray-300">Terms of Service</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact</h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Phone size={18} />
+                <a href="tel:+998939514964" className="hover:text-gray-300">+998 93 951 49 64</a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={18} />
+                <a href="mailto:info@btle.uz" className="hover:text-gray-300">info@btle.uz</a>
               </div>
             </div>
-
-            <div>
-              <h4 className="font-bold text-lg mb-4">{t("explore_footer")}</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("experiences")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("destinations")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("all_categories")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    Travel Blog
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-lg mb-4">{t("company")}</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("about_us")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("careers")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("contact_us")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("partner_with_us")}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-bold text-lg mb-4">{t("support")}</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("help_center")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("faq")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("privacy_policy")}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-slate-300 hover:text-white transition-colors">
-                    {t("terms_service")}
-                  </Link>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
-      </div>
 
-      {/* Copyright */}
-      <div className="border-t border-slate-800 py-6">
-        <div className="container flex flex-col md:flex-row justify-between items-center">
-          <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} TravelMind. {t("all_rights_reserved")}
-          </p>
-          <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
-              {t("privacy")}
-            </Link>
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
-              {t("terms")}
-            </Link>
-            <Link href="/" className="text-slate-400 text-sm hover:text-white transition-colors">
-              {t("sitemap")}
-            </Link>
-          </div>
+        <div className="mt-8 pt-8 border-t border-gray-700 text-sm text-gray-400 text-center">
+          <p>© {new Date().getFullYear()} BTLE. All rights reserved.</p>
         </div>
       </div>
     </footer>

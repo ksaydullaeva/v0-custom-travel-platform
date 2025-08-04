@@ -6,12 +6,14 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Search, Star, Clock, Users, ChevronRight, ChevronLeft } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { featuredExperiences, topDestinations } from "@/lib/data"
+import { ArrowRight, Search, Star, Clock, Users, ChevronRight, ChevronLeft, AlertCircle, Loader2 } from "lucide-react"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
+import { topDestinations } from "@/lib/data"
 import ExperienceCard from "@/components/experience-card"
 import { useTranslation } from "@/lib/i18n"
 import { DatePicker } from "@/components/simple-date-picker"
+import { getExperiences, type Experience } from "@/lib/api/experiences"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -23,6 +25,31 @@ export default function HomePage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+
+  // State for featured experiences fetched from DB
+  const [featuredExperiencesState, setFeaturedExperiencesState] = useState<Experience[]>([])
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true)
+  const [errorFeatured, setErrorFeatured] = useState<string | null>(null)
+
+  // Fetch featured experiences on component mount
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      setIsLoadingFeatured(true)
+      setErrorFeatured(null)
+      try {
+        // Fetch top 4 experiences by rating
+        const data = await getExperiences({}, 4, 0, "rating", "desc")
+        setFeaturedExperiencesState(data)
+      } catch (err) {
+        console.error("Error fetching featured experiences:", err)
+        setErrorFeatured("Failed to load featured experiences.")
+      } finally {
+        setIsLoadingFeatured(false)
+      }
+    }
+
+    fetchFeatured()
+  }, []) // Empty dependency array means this runs once on mount
 
   // Close date picker when clicking outside
   useEffect(() => {
@@ -120,7 +147,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="flex-1 pl-6 relative" ref={datePickerRef}>
-                <div className="text-sm font-medium text-gray-800">When</div>
+                <div className="text-sm font-medium text-gray-800">When?</div>
                 <input
                   placeholder="Select Dates"
                   className="w-full border-none focus:outline-none text-gray-600 placeholder:text-gray-400 bg-transparent cursor-pointer"
@@ -160,11 +187,50 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredExperiences.slice(0, 4).map((experience) => (
-              <ExperienceCard key={experience.id} experience={experience} />
-            ))}
-          </div>
+          {/* Loading state */}
+          {isLoadingFeatured && (
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+              <span className="text-lg">Loading featured experiences...</span>
+            </div>
+          )}
+
+          {/* Error state */}
+          {errorFeatured && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{errorFeatured}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Display experiences or no results message */}
+          {!isLoadingFeatured && !errorFeatured && (featuredExperiencesState.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredExperiencesState.map((experience) => (
+                <ExperienceCard
+                  key={experience.id}
+                  experience={{
+                    ...experience,
+                    // reviews_count and image_url should now come directly from the fetched data
+                    // since Experience type aligns with DB schema
+                    reviews_count: experience.reviews_count,
+                    image_url: experience.image_url,
+                    // Remove hardcoded city/country if your DB schema includes them
+                    // city: "", // or derive from experience.location if possible
+                    // country: "", // or derive from experience.location if possible
+                    // Add other missing fields with defaults or derived values
+                    // e.g. start_date, end_date, etc.
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <h2 className="text-2xl font-semibold mb-2">{t("no_experiences_found")}</h2>
+              <p className="text-muted-foreground">No featured experiences available at the moment.</p>
+            </div>
+          ))}
 
           <div className="flex justify-center mt-8">
             <Link href="/experiences">

@@ -8,12 +8,13 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from "@/lib/i18n"
 import { AuthProvider } from "@/components/auth/auth-provider"
+import 'leaflet/dist/leaflet.css';
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
 export const metadata: Metadata = {
-  title: "TravelMind - Discover Unique Travel Experiences",
-  description: "Find and book unique travel experiences around the world with TravelMind",
+  title: "BTLE - Discover Unique Travel Experiences",
+  description: "Find and book unique travel experiences around the world with BTLE",
     generator: 'v0.dev'
 }
 
